@@ -142,7 +142,7 @@ class MyHomePage extends StatelessWidget {
                     onPressed: counter.increment,
                     child: const Text('Increment'),
                   ),
-                  const SizedBox(width: 20),
+                  const SizedBox(height: 50, width: 20), // Space between buttons
                   ElevatedButton(
                     onPressed: counter.decrement,
                     child: const Text('Decrement'),
