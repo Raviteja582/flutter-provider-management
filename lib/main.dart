@@ -51,6 +51,43 @@ class Counter with ChangeNotifier {
     value += 1;
     notifyListeners();
   }
+
+  void decrement() {
+    if (value > 0) {
+      value--;
+      notifyListeners();
+    }
+  }
+
+  String getAgeStageMessage() {
+    if (value >= 0 && value <= 12) {
+      return "You're a child!";
+    } else if (value >= 13 && value <= 19) {
+      return "Teenager time!";
+    } else if (value >= 20 && value <= 30) {
+      return "You're a young adult!";
+    } else if (value >= 31 && value <= 50) {
+      return "You're an adult now!";
+    } else if (value >= 51) {
+      return "Golden years!";
+    }
+    return "";
+  }
+
+  Color getBackgroundColor() {
+    if (value >= 0 && value <= 12) {
+      return Colors.lightBlue;
+    } else if (value >= 13 && value <= 19) {
+      return Colors.lightGreen;
+    } else if (value >= 20 && value <= 30) {
+      return Colors.yellowAccent;
+    } else if (value >= 31 && value <= 50) {
+      return Colors.orange;
+    } else if (value >= 51) {
+      return Colors.grey.shade300;
+    }
+    return Colors.white;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -72,50 +109,49 @@ class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
   @override
   Widget build(BuildContext context) {
+    final counter = Provider.of<Counter>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Demo Home Page'),
+        title: const Text('Age Milestones Counter'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-// Consumer looks for an ancestor Provider widget
-// and retrieves its model (Counter, in this case).
-// Then it uses that model to build widgets, and will trigger
-// rebuilds if the model is updated.
-            Consumer<Counter>(
-              builder: (context, counter, child) => Text(
-                '${counter.value}',
-                style: Theme.of(context).textTheme.headlineMedium,
+      body: Container(
+        color: counter.getBackgroundColor(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Your Age:',
+                style: TextStyle(fontSize: 24),
               ),
-            ),
-          ],
+              Text(
+                '${counter.value}',
+                style: const TextStyle(fontSize: 48),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                counter.getAgeStageMessage(),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: counter.increment,
+                    child: const Text('Increment'),
+                  ),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: counter.decrement,
+                    child: const Text('Decrement'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-// You can access your providers anywhere you have access
-// to the context. One way is to use Provider.of<Counter>(context).
-// The provider package also defines extension methods on the context
-// itself. You can call context.watch<Counter>() in a build method
-// of any widget to access the current state of Counter, and to ask
-// Flutter to rebuild your widget anytime Counter changes.
-//
-// You can't use context.watch() outside build methods, because that
-// often leads to subtle bugs. Instead, you should use
-// context.read<Counter>(), which gets the current state
-// but doesn't ask Flutter for future rebuilds.
-//
-// Since we're in a callback that will be called whenever the user
-// taps the FloatingActionButton, we are not in the build method here.
-// We should use context.read().
-          var counter = context.read<Counter>();
-          counter.increment();
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
